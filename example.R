@@ -1,6 +1,7 @@
-source("C:\\Users\\Julian\\Dropbox\\MOUSEDOC\\methods\\sub1\\network_generator.R")
-source("C:\\Users\\Julian\\Dropbox\\MOUSEDOC\\methods\\sub1\\get_meetings.R")
-source("C:\\Users\\Julian\\Dropbox\\MOUSEDOC\\methods\\sub1\\SocSpatR.R")
+source("network_generator.R")
+source("get_meetings.R")
+source("SocSpatR.R")
+
 library(foreach)
 library(igraph)
 
@@ -18,14 +19,15 @@ parsets3=c(0.8,0.4,0)
 #generate a population
 pop1=population.generator(groups=10,mean.group.size=10,max.group.size=15,F)
 
-V_measures=foreach(i=1:length(parsets))%do%{
+#for each of the 3 parameter sets, example of usage
+foreach(i=1:length(parsets))%do%{
 	currpar=c(parsets[[i]],population=list(pop1))
 	#generate "true" network
 	net1=do.call(network.generator,currpar)
 	#generate interactions from "true" network
-	meetinglist(net1,nmeetings=5000,grouprestrict=parsets2[i],restrict=parsets3[i])
+	edges=meetinglist(net1,nmeetings=5000,grouprestrict=parsets2[i],restrict=parsets3[i])
 
-	net=graph_from_data_frame(edges[[1]]$edgelist,directed=F)
+	net=graph_from_data_frame(edges$edgelist,directed=F)
 
 	#get average position for each node
 	for(i in V(net)){
